@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace TestSocialNetwork;
 use JetBrains\PhpStorm\Pure;
 use PHPUnit\Framework\TestCase;
-use SocialNetwork\Follower;
 use SocialNetwork\EmptyListOfSubscribersException;
+use SocialNetwork\Follower;
 use SocialNetwork\SubscriberAlreadyExistsException;
 use SocialNetwork\SubscriberNotFoundException;
 use SocialNetwork\Twitter;
@@ -42,14 +42,13 @@ class testTwitter extends TestCase
         //given
         //refer to Setup method
         $expectedAmountOfObservers = 10;
-        $observer = $this->generateObservers($expectedAmountOfObservers);
         $this->twitter = new Twitter($this->generateObservers($expectedAmountOfObservers));
 
         //when
         //event is called directly by the assertion
 
         //then
-        $this->assertEquals($expectedAmountOfObservers, Count($this->twitter->getObservers()));
+        $this->assertCount($expectedAmountOfObservers, $this->twitter->getObservers());
     }
 
     public function test_twits_AfterInstantiation_Success(){
@@ -66,7 +65,7 @@ class testTwitter extends TestCase
 
     public function test_notifyObservers_EmptyListOfSubscriber_ThrowsException(){
         //given
-        //refer to Before Each method
+        //refer to Setup Each method
 
         //when
         //event is called directly by the assertion
@@ -78,7 +77,7 @@ class testTwitter extends TestCase
 
     public function test_subscribe_AddFirstSubscriber_Success() {
         //given
-        //refer to Before Each method
+        //refer to Setup Method
         $expectedAmountOfSubscribers = 15;
         $followers = $this->generateObservers($expectedAmountOfSubscribers);
 
@@ -91,11 +90,11 @@ class testTwitter extends TestCase
 
     public function test_subscribe_AddSubscribersToExistingList_Success(){
         //given
-        //refer to Before Each method
+        //refer to Setup Method
         $expectedAmountOfSubscriber = 30;
         $followers = $this->generateObservers($expectedAmountOfSubscriber / 2);
         $this->twitter->subscribe($followers);
-        $followersToAdd = $this->generateObservers($expectedAmountOfSubscriber / 2);
+        $followersToAdd = $this->generateObservers($expectedAmountOfSubscriber / 2, Count($followers));
 
         //when
         $this->twitter->subscribe($followersToAdd);
@@ -107,7 +106,7 @@ class testTwitter extends TestCase
     public function test_subscribe_SubscriberAlreadyExists_ThrowsException()
     {
         //given
-        //refer to Before Each method
+        //refer to Setup Method
         $expectedAmountOfSubscriber = 15;
         $followers = $this->generateObservers($expectedAmountOfSubscriber);
         $this->twitter->subscribe($followers);
@@ -125,7 +124,7 @@ class testTwitter extends TestCase
     public function test_unsubscribe_NominalCase_Success()
     {
         //given
-        //refer to Before Each method
+        //refer to Setup Method
         $expectedAmountOfSubscribers = 14;
         $followers = $this->generateObservers($expectedAmountOfSubscribers + 1);
         $this->twitter->subscribe($followers);
@@ -140,8 +139,8 @@ class testTwitter extends TestCase
     public function test_unsubscribe_EmptyListOfSubscriber_ThrowsException()
     {
         //given
-        //refer to Before Each method
-        $followerToRemove = new Follower();
+        //refer to Setup Method
+        $followerToRemove = new Follower(99);
 
         //when
         //event is called directly by the assertion
@@ -154,8 +153,8 @@ class testTwitter extends TestCase
     public function test_unsubscribe_SubscriberNotFound_ThrowsException()
     {
         //given
-        //refer to Before Each method
-        $followerNotFound = new Follower();
+        //refer to Setup Method
+        $followerNotFound = new Follower(99);
         $this->twitter->subscribe($this->generateObservers(10));
 
         //when
@@ -167,12 +166,12 @@ class testTwitter extends TestCase
     }
 
     //region private methods
-    #[Pure] private function generateObservers($amountOfObserversToCreate):array
+    #[Pure] private function generateObservers($amountOfObserversToCreate, $startIndex = 0):array
     {
         $observers = array();
-        for ($i=0 ; $i < $amountOfObserversToCreate ; $i++)
+        for ($i= $startIndex; $i < $amountOfObserversToCreate + $startIndex ; $i++)
         {
-            $observers[] = new Follower();
+            $observers[] = new Follower($i);
         }
         return $observers;
     }
