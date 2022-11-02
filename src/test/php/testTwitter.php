@@ -9,7 +9,7 @@ use SocialNetwork\SubscriberAlreadyExistsException;
 use SocialNetwork\SubscriberNotFoundException;
 use SocialNetwork\Twitter;
 
-require_once '..\..\..\vendor\autoload.php';
+require '..\..\..\vendor\autoload.php';
 require '..\..\main\php\Twitter.php';
 require '..\..\main\php\Follower.php';
 
